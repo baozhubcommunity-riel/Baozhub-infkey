@@ -1,312 +1,230 @@
--- Baozhub.infkey - GUI khóa + menu neon (Drag, Open/Close, Copy)
--- Key cố định để mở menu chính: "baozcomunity"
+-- Baozhub.infkey - Version for Delta Executor
+-- Key mở menu chính: "baozcomunity"
 
-local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UIS = game:GetService("UserInputService")
-local player = Players.LocalPlayer
-local name = player and player.Name or "User"
+local player = game.Players.LocalPlayer
+if not player then return end
 
--- Cấu hình
 local SCREEN_NAME = "Baozhub.infkey"
-local UNLOCK_KEY = "baozcomunity" -- key cố định để mở menu chính
-local scriptCode = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua", true))()'
+local UNLOCK_KEY = "baozcomunity"
+local scriptCode = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua"))()'
 local keyCode = "rMChVgMZYJYHMGNtMvYkvDKasUFztRuG"
 
--- Tạo ScreenGui
+-- Xóa GUI cũ nếu có
+local old = player.PlayerGui:FindFirstChild(SCREEN_NAME)
+if old then old:Destroy() end
+
 local gui = Instance.new("ScreenGui")
 gui.Name = SCREEN_NAME
 gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
--- ===== Màn hình khóa (Unlock) =====
+-- ==== Lock Frame ====
 local lockFrame = Instance.new("Frame")
 lockFrame.Size = UDim2.new(0, 420, 0, 160)
 lockFrame.Position = UDim2.new(0.5, -210, 0.5, -80)
 lockFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-lockFrame.BackgroundColor3 = Color3.fromRGB(20,20,24)
-lockFrame.BorderSizePixel = 0
+lockFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
 lockFrame.Parent = gui
+Instance.new("UICorner", lockFrame).CornerRadius = UDim.new(0, 12)
 
-local lockCorner = Instance.new("UICorner", lockFrame)
-lockCorner.CornerRadius = UDim.new(0,12)
+local title = Instance.new("TextLabel", lockFrame)
+title.Size = UDim2.new(1, -20, 0, 30)
+title.Position = UDim2.new(0, 10, 0, 10)
+title.BackgroundTransparency = 1
+title.Text = "Baozhub.infkey - Enter Key"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 20
+title.TextColor3 = Color3.fromRGB(0, 255, 180)
+title.TextXAlignment = Enum.TextXAlignment.Left
 
-local lockTitle = Instance.new("TextLabel", lockFrame)
-lockTitle.Size = UDim2.new(1, -20, 0, 30)
-lockTitle.Position = UDim2.new(0,10,0,10)
-lockTitle.BackgroundTransparency = 1
-lockTitle.Text = "Baozhub.infkey - Enter Key"
-lockTitle.Font = Enum.Font.GothamBold
-lockTitle.TextSize = 20
-lockTitle.TextColor3 = Color3.fromRGB(0,255,180)
-lockTitle.TextXAlignment = Enum.TextXAlignment.Left
+local box = Instance.new("TextBox", lockFrame)
+box.Size = UDim2.new(1, -20, 0, 40)
+box.Position = UDim2.new(0, 10, 0, 60)
+box.PlaceholderText = "Nhập key ở đây..."
+box.TextColor3 = Color3.new(1, 1, 1)
+box.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+box.Font = Enum.Font.Gotham
+box.TextSize = 16
+box.ClearTextOnFocus = false
+Instance.new("UICorner", box).CornerRadius = UDim.new(0, 8)
 
-local lockHint = Instance.new("TextLabel", lockFrame)
-lockHint.Size = UDim2.new(1, -20, 0, 22)
-lockHint.Position = UDim2.new(0,10,0,42)
-lockHint.BackgroundTransparency = 1
-lockHint.Text = "Nhập key để mở menu chính"
-lockHint.Font = Enum.Font.Gotham
-lockHint.TextSize = 14
-lockHint.TextColor3 = Color3.fromRGB(180,255,230)
-lockHint.TextXAlignment = Enum.TextXAlignment.Left
+local unlock = Instance.new("TextButton", lockFrame)
+unlock.Size = UDim2.new(0, 120, 0, 36)
+unlock.Position = UDim2.new(1, -130, 1, -46)
+unlock.Text = "Unlock"
+unlock.Font = Enum.Font.GothamBold
+unlock.TextSize = 16
+unlock.TextColor3 = Color3.fromRGB(255,255,255)
+unlock.BackgroundColor3 = Color3.fromRGB(0,160,120)
+Instance.new("UICorner", unlock).CornerRadius = UDim.new(0,8)
 
-local keyBox = Instance.new("TextBox", lockFrame)
-keyBox.Size = UDim2.new(1, -20, 0, 40)
-keyBox.Position = UDim2.new(0,10,0,70)
-keyBox.PlaceholderText = "Nhập key ở đây..."
-keyBox.ClearTextOnFocus = false
-keyBox.Font = Enum.Font.Gotham
-keyBox.TextSize = 16
-keyBox.TextColor3 = Color3.fromRGB(255,255,255)
-keyBox.BackgroundColor3 = Color3.fromRGB(35,35,40)
-local keyCorner = Instance.new("UICorner", keyBox)
-keyCorner.CornerRadius = UDim.new(0,8)
+local status = Instance.new("TextLabel", lockFrame)
+status.Size = UDim2.new(1, -150, 0, 28)
+status.Position = UDim2.new(0,10,1,-46)
+status.BackgroundTransparency = 1
+status.Text = ""
+status.Font = Enum.Font.Gotham
+status.TextSize = 14
+status.TextColor3 = Color3.fromRGB(255,200,200)
+status.TextXAlignment = Enum.TextXAlignment.Left
 
-local unlockBtn = Instance.new("TextButton", lockFrame)
-unlockBtn.Size = UDim2.new(0,120,0,36)
-unlockBtn.Position = UDim2.new(1, -130, 1, -46)
-unlockBtn.AnchorPoint = Vector2.new(0,0)
-unlockBtn.Text = "Unlock"
-unlockBtn.Font = Enum.Font.GothamBold
-unlockBtn.TextSize = 16
-unlockBtn.TextColor3 = Color3.fromRGB(255,255,255)
-unlockBtn.BackgroundColor3 = Color3.fromRGB(0,160,120)
-local unlockCorner = Instance.new("UICorner", unlockBtn)
-unlockCorner.CornerRadius = UDim.new(0,8)
+-- ==== Main Frame ====
+local main = Instance.new("Frame")
+main.Size = UDim2.new(0, 420, 0, 230)
+main.Position = UDim2.new(0.5, -210, 0.5, -115)
+main.AnchorPoint = Vector2.new(0.5, 0.5)
+main.BackgroundColor3 = Color3.fromRGB(10,10,15)
+main.Visible = false
+main.Parent = gui
+Instance.new("UICorner", main).CornerRadius = UDim.new(0, 15)
+local stroke = Instance.new("UIStroke", main)
+stroke.Thickness = 2
+stroke.Color = Color3.fromRGB(0,255,180)
 
-local lockStatus = Instance.new("TextLabel", lockFrame)
-lockStatus.Size = UDim2.new(1, -150, 0, 28)
-lockStatus.Position = UDim2.new(0,10,1,-46)
-lockStatus.BackgroundTransparency = 1
-lockStatus.Text = ""
-lockStatus.Font = Enum.Font.Gotham
-lockStatus.TextSize = 14
-lockStatus.TextColor3 = Color3.fromRGB(255,200,200)
-lockStatus.TextXAlignment = Enum.TextXAlignment.Left
-
--- ===== Menu chính (ẩn trước) =====
-local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 420, 0, 230)
-mainFrame.Position = UDim2.new(0.5, -210, 0.5, -115)
-mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-mainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
-mainFrame.BorderSizePixel = 0
-mainFrame.Parent = gui
-mainFrame.Visible = false
-mainFrame.Active = true -- để drag hoạt động trong một số môi trường
--- NOTE: sử dụng Draggable = true cho môi trường legacy, vẫn có drag fallback dưới
-pcall(function() mainFrame.Draggable = true end)
-
-local mainCorner = Instance.new("UICorner", mainFrame)
-mainCorner.CornerRadius = UDim.new(0, 15)
-
--- neon stroke
-local neon = Instance.new("UIStroke", mainFrame)
-neon.Thickness = 2
-neon.Color = Color3.fromRGB(0,255,180)
-neon.Transparency = 0.2
-neon.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-
--- header (dùng để drag khi environment không hỗ trợ Draggable)
-local header = Instance.new("Frame", mainFrame)
+local header = Instance.new("Frame", main)
 header.Size = UDim2.new(1,0,0,35)
 header.BackgroundColor3 = Color3.fromRGB(20,20,30)
 header.BorderSizePixel = 0
-local headerCorner = Instance.new("UICorner", header)
-headerCorner.CornerRadius = UDim.new(0,15)
+Instance.new("UICorner", header).CornerRadius = UDim.new(0,15)
 
-local title = Instance.new("TextLabel", header)
-title.Size = UDim2.new(1, -50, 1, 0)
-title.Position = UDim2.new(0,10,0,0)
-title.BackgroundTransparency = 1
-title.Text = "Baozhub.infkey"
-title.Font = Enum.Font.GothamBold
-title.TextSize = 20
-title.TextColor3 = Color3.fromRGB(0,255,180)
-title.TextXAlignment = Enum.TextXAlignment.Left
+local headText = Instance.new("TextLabel", header)
+headText.Size = UDim2.new(1, -50, 1, 0)
+headText.Position = UDim2.new(0,10,0,0)
+headText.BackgroundTransparency = 1
+headText.Text = "Baozhub.infkey"
+headText.Font = Enum.Font.GothamBold
+headText.TextSize = 20
+headText.TextColor3 = Color3.fromRGB(0,255,180)
+headText.TextXAlignment = Enum.TextXAlignment.Left
 
--- nút ẩn/hiện toàn GUI (ở góc)
-local toggleBtn = Instance.new("TextButton", gui)
-toggleBtn.Size = UDim2.new(0, 50, 0, 50)
-toggleBtn.Position = UDim2.new(0, 20, 1, -70)
-toggleBtn.BackgroundColor3 = Color3.fromRGB(0,20,20)
-toggleBtn.TextColor3 = Color3.fromRGB(0,255,180)
-toggleBtn.Text = "⚡"
-toggleBtn.Font = Enum.Font.GothamBold
-toggleBtn.TextSize = 26
-local toggleCorner = Instance.new("UICorner", toggleBtn)
-toggleCorner.CornerRadius = UDim.new(1,0)
-local glowBtn = Instance.new("UIStroke", toggleBtn)
-glowBtn.Color = Color3.fromRGB(0,255,180)
-glowBtn.Thickness = 2
+-- Toggle button
+local toggle = Instance.new("TextButton", gui)
+toggle.Size = UDim2.new(0, 50, 0, 50)
+toggle.Position = UDim2.new(0, 20, 1, -70)
+toggle.BackgroundColor3 = Color3.fromRGB(0, 20, 20)
+toggle.TextColor3 = Color3.fromRGB(0,255,180)
+toggle.Text = "⚡"
+toggle.Font = Enum.Font.GothamBold
+toggle.TextSize = 26
+Instance.new("UICorner", toggle).CornerRadius = UDim.new(1,0)
+local glow = Instance.new("UIStroke", toggle)
+glow.Color = Color3.fromRGB(0,255,180)
 
--- nội dung chính
-local content = Instance.new("Frame", mainFrame)
-content.Size = UDim2.new(1, -20, 1, -50)
-content.Position = UDim2.new(0,10,0,45)
-content.BackgroundTransparency = 1
+-- Nội dung
+local frame = Instance.new("Frame", main)
+frame.Size = UDim2.new(1, -20, 1, -50)
+frame.Position = UDim2.new(0, 10, 0, 45)
+frame.BackgroundTransparency = 1
 
-local status = Instance.new("TextLabel", content)
-status.Size = UDim2.new(1,0,0,30)
-status.Position = UDim2.new(0,0,0,0)
-status.BackgroundTransparency = 1
-status.Text = "Loading..."
-status.Font = Enum.Font.Gotham
-status.TextSize = 18
-status.TextColor3 = Color3.fromRGB(180,255,230)
+local info = Instance.new("TextLabel", frame)
+info.Size = UDim2.new(1,0,0,30)
+info.Text = "Hello, " .. player.Name .. "!"
+info.Font = Enum.Font.Gotham
+info.TextSize = 18
+info.BackgroundTransparency = 1
+info.TextColor3 = Color3.fromRGB(0,255,180)
 
-local btnScript = Instance.new("TextButton", content)
-btnScript.Size = UDim2.new(1, -20, 0, 50)
-btnScript.Position = UDim2.new(0, 10, 0, 50)
-btnScript.BackgroundColor3 = Color3.fromRGB(0,60,60)
-btnScript.TextColor3 = Color3.fromRGB(0,255,180)
-btnScript.Text = "Script SpeedX"
-btnScript.Font = Enum.Font.GothamBold
-btnScript.TextSize = 18
-Instance.new("UICorner", btnScript).CornerRadius = UDim.new(0,10)
-local glow1 = Instance.new("UIStroke", btnScript)
-glow1.Color = Color3.fromRGB(0,255,180)
-glow1.Thickness = 1.5
+local btn1 = Instance.new("TextButton", frame)
+btn1.Size = UDim2.new(1, -20, 0, 50)
+btn1.Position = UDim2.new(0, 10, 0, 50)
+btn1.Text = "Script SpeedX"
+btn1.BackgroundColor3 = Color3.fromRGB(0,60,60)
+btn1.TextColor3 = Color3.fromRGB(0,255,180)
+btn1.Font = Enum.Font.GothamBold
+btn1.TextSize = 18
+Instance.new("UICorner", btn1).CornerRadius = UDim.new(0,10)
+Instance.new("UIStroke", btn1).Color = Color3.fromRGB(0,255,180)
 
-local btnKey = Instance.new("TextButton", content)
-btnKey.Size = UDim2.new(1, -20, 0, 50)
-btnKey.Position = UDim2.new(0, 10, 0, 115)
-btnKey.BackgroundColor3 = Color3.fromRGB(0,60,40)
-btnKey.TextColor3 = Color3.fromRGB(0,255,180)
-btnKey.Text = "Key Inf"
-btnKey.Font = Enum.Font.GothamBold
-btnKey.TextSize = 18
-Instance.new("UICorner", btnKey).CornerRadius = UDim.new(0,10)
-local glow2 = Instance.new("UIStroke", btnKey)
-glow2.Color = Color3.fromRGB(0,255,180)
-glow2.Thickness = 1.5
+local btn2 = Instance.new("TextButton", frame)
+btn2.Size = UDim2.new(1, -20, 0, 50)
+btn2.Position = UDim2.new(0, 10, 0, 115)
+btn2.Text = "Key Inf"
+btn2.BackgroundColor3 = Color3.fromRGB(0,60,40)
+btn2.TextColor3 = Color3.fromRGB(0,255,180)
+btn2.Font = Enum.Font.GothamBold
+btn2.TextSize = 18
+Instance.new("UICorner", btn2).CornerRadius = UDim.new(0,10)
+Instance.new("UIStroke", btn2).Color = Color3.fromRGB(0,255,180)
 
--- ===== Chức năng copy =====
-local function copyText(text)
-	if setclipboard then
-		pcall(setclipboard, text)
-		status.Text = "✅ Copied!"
-	else
-		status.Text = "⚠️ Executor không hỗ trợ setclipboard."
-	end
-	task.wait(1.2)
-	status.Text = "Hello, " .. name .. "!"
-end
-
-btnScript.MouseButton1Click:Connect(function()
-	copyText(scriptCode)
-end)
-
-btnKey.MouseButton1Click:Connect(function()
-	copyText(keyCode)
-end)
-
--- ===== Drag fallback (kéo toàn GUI bằng header nếu Draggable không hoạt động) =====
+-- ==== Drag system (compatible Delta) ====
 local dragging, dragStart, startPos
 header.InputBegan:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseButton1 then
 		dragging = true
 		dragStart = input.Position
-		startPos = mainFrame.Position
-		input.Changed:Connect(function()
-			if input.UserInputState == Enum.UserInputState.End then
-				dragging = false
-			end
-		end)
+		startPos = main.Position
+	end
+end)
+UIS.InputChanged:Connect(function(input)
+	if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+		local delta = input.Position - dragStart
+		main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+	end
+end)
+UIS.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = false
 	end
 end)
 
-header.InputChanged:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseMovement then
-		if dragging and dragStart and startPos then
-			local delta = input.Position - dragStart
-			mainFrame.Position = UDim2.new(
-				startPos.X.Scale, startPos.X.Offset + delta.X,
-				startPos.Y.Scale, startPos.Y.Offset + delta.Y
-			)
-		end
+-- ==== Clipboard (Delta = toClipboard) ====
+local function copyText(text)
+	local ok = false
+	if toClipboard then
+		pcall(toClipboard, text)
+		ok = true
+	elseif setclipboard then
+		pcall(setclipboard, text)
+		ok = true
 	end
-end)
-
--- ===== Open/Close toàn GUI (toggleBtn) =====
-local isOpen = true
-toggleBtn.MouseButton1Click:Connect(function()
-	isOpen = not isOpen
-	if isOpen then
-		-- show mainFrame
-		mainFrame.Visible = true
-		mainFrame.BackgroundTransparency = 1
-		TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Sine), {BackgroundTransparency = 0}):Play()
+	if ok then
+		info.Text = "✅ Copied!"
 	else
-		-- hide mainFrame
-		TweenService:Create(mainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Sine), {BackgroundTransparency = 1}):Play()
-		task.wait(0.25)
-		mainFrame.Visible = false
+		info.Text = "⚠️ Không thể copy!"
 	end
-end)
-
--- ===== Loading & Neon color loop =====
-task.spawn(function()
-	for i = 1, 3 do
-		status.Text = "Loading" .. string.rep(".", i)
-		task.wait(0.4)
-	end
-	status.Text = "Hello, " .. name .. "!"
 	task.wait(1)
-	status.Text = "Sử dụng 2 nút để copy Script hoặc Key."
+	info.Text = "Hello, " .. player.Name .. "!"
+end
+
+btn1.MouseButton1Click:Connect(function() copyText(scriptCode) end)
+btn2.MouseButton1Click:Connect(function() copyText(keyCode) end)
+
+-- ==== Toggle show/hide ====
+local visible = true
+toggle.MouseButton1Click:Connect(function()
+	visible = not visible
+	main.Visible = visible
 end)
 
-task.spawn(function()
-	while task.wait(0.05) do
-		local hue = tick() % 5 / 5
-		local color = Color3.fromHSV(hue, 1, 1)
-		neon.Color = color
-		glow1.Color = color
-		glow2.Color = color
-		title.TextColor3 = color
-		glowBtn.Color = color
-		toggleBtn.TextColor3 = color
-	end
-end)
-
--- ===== Unlock logic: kiểm tra key cố định "baozcomunity" =====
-local function tryUnlock(k)
-	if not k or k == "" then
-		lockStatus.Text = "Key trống."
-		return
-	end
-	if tostring(k):lower() == tostring(UNLOCK_KEY):lower() then
-		-- thành công: ẩn lockFrame, hiện mainFrame
-		lockStatus.Text = "Đang mở menu..."
-		-- tween nhỏ cho mượt
-		local tween = TweenService:Create(lockFrame, TweenInfo.new(0.25, Enum.EasingStyle.Sine), {BackgroundTransparency = 1})
-		tween:Play()
-		tween.Completed:Wait()
+-- ==== Unlock Logic ====
+local function unlockMenu()
+	if string.lower(box.Text) == UNLOCK_KEY then
+		status.Text = "Đang mở menu..."
+		task.wait(0.3)
 		lockFrame:Destroy()
-		mainFrame.Visible = true
-		-- small pop-in
-		mainFrame.BackgroundTransparency = 1
-		mainFrame.Position = UDim2.new(0.5, -210, 0.5, -150)
-		TweenService:Create(mainFrame, TweenInfo.new(0.28, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.new(0.5, -210, 0.5, -115), BackgroundTransparency = 0}):Play()
+		main.Visible = true
 	else
-		lockStatus.Text = "Key sai. Vui lòng kiểm tra lại."
+		status.Text = "❌ Key sai!"
 	end
 end
 
-unlockBtn.MouseButton1Click:Connect(function()
-	tryUnlock(keyBox.Text)
+unlock.MouseButton1Click:Connect(unlockMenu)
+box.FocusLost:Connect(function(enter)
+	if enter then unlockMenu() end
 end)
 
--- Hỗ trợ Enter để unlock
-keyBox.FocusLost:Connect(function(enterPressed)
-	if enterPressed then
-		tryUnlock(keyBox.Text)
+-- ==== Neon Animation ====
+task.spawn(function()
+	while gui.Parent do
+		task.wait(0.05)
+		local hue = tick() % 5 / 5
+		local color = Color3.fromHSV(hue,1,1)
+		stroke.Color = color
+		glow.Color = color
+		headText.TextColor3 = color
+		btn1.TextColor3 = color
+		btn2.TextColor3 = color
 	end
 end)
-
--- Nếu muốn: auto-fill keyBox với hint (bỏ comment nếu cần)
--- keyBox.Text = UNLOCK_KEY
-
-
--- END
